@@ -25,7 +25,7 @@ const copyrightText = document.querySelector(".copyright");
 function success(position) {
   console.log(position);
   copyrightText.innerHTML =
-    position.coords.latitude + " " + position.coords.latitude;
+    position.coords.latitude + " " + position.coords.longitude;
 }
 
 function fail() {
