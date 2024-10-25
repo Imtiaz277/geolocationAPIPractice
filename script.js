@@ -1,37 +1,147 @@
-const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-];
-
-const form = document.querySelector('.form');
-const containerWorkouts = document.querySelector('.workouts');
-//const inputType = document.querySelector('.form__input--type');
-const inputDistance = document.querySelector('.form__input--distance');
-const inputDuration = document.querySelector('.form__input--duration');
-//const inputCadence = document.querySelector('.form__input--cadence');
-//const inputElevation = document.querySelector('.form__input--elevation');
-const copyrightText = document.querySelector('.copyright');
+const details = document.querySelector('.details');
+const dropdown_menu = document.getElementById('dropdown_menu');
 
 // Make these two global variables, so we can access them in other functions, outside scope, still in this file btw.
 let map, mapEvent;
 
-let arr_of_tennant = [
-    { name: 'Bruce', ic: '000123456789', currStatus: 'good', lat: 5.391502764281349, lng: 100.29951095581055 },
-    { name: 'Clark', ic: '123445567899', currStatus: 'warning', lat: 5.341450504069681, lng: 100.28766632080078 },
-    { name: 'Diana', ic: '123125365758', currStatus: 'error', lat: 5.451115939009762, lng: 100.19514083862306 },
+// Data obtained from database
+// Keep this array unchanged
+const arr_of_tennant = [
+    {
+        ic: '000123456789',
+        currStatus: 'good',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.391502764281349,
+        lng: 100.29951095581055,
+    },
+    {
+        ic: '123445567899',
+        currStatus: 'warning',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.341450504069681,
+        lng: 100.28766632080078,
+    },
+    {
+        ic: '123125365758',
+        currStatus: 'error',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.451115939009762,
+        lng: 100.19514083862306,
+    },
+    {
+        ic: '000643674326',
+        currStatus: 'good',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.401502764281,
+        lng: 100.29951095581055,
+    },
+    {
+        ic: '123456788765',
+        currStatus: 'warning',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.411450504069681,
+        lng: 100.28766632080078,
+    },
+    {
+        ic: '567456323455',
+        currStatus: 'error',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.421115939009762,
+        lng: 100.19514083862306,
+    },
+    {
+        ic: '085321456789',
+        currStatus: 'good',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.431502764281349,
+        lng: 100.29951095581055,
+    },
+    {
+        ic: '125643189065',
+        currStatus: 'warning',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.441450504069681,
+        lng: 100.28766632080078,
+    },
+    {
+        ic: '000723451277',
+        currStatus: 'error',
+        image: 'tennant_image_placeholder.jpg',
+        lat: 5.471115939009762,
+        lng: 100.19514083862306,
+    },
 ];
 
-// When geolocation successfully get user's current location
+// Store some markers in an array.
+// We will use this array to remove markers from the map.
+let arr_of_markers = [];
+
+// Use this array to display tennants information and markers
+// You can change this array
+// When launching the website for the first time, it will display all tenants
+// Use spread operator to make a shallow copy
+let arr_filtered_data = [...arr_of_tennant];
+
+// Display all markers
+function displayAllMarkers() {
+    for (const currTenant of arr_filtered_data) {
+        let popupStyle;
+
+        //prettier-ignore
+        if (currTenant.currStatus == 'good') {
+            popupStyle = 'green-popup';
+        } 
+        else if (currTenant.currStatus == 'warning') {
+            popupStyle = 'yellow-popup';
+        } 
+        else {
+            popupStyle = 'red-popup';
+        }
+
+        let marker = L.marker([currTenant.lat, currTenant.lng])
+            .addTo(map)
+            .bindPopup(
+                L.popup({
+                    maxWidth: 250,
+                    minWidth: 100,
+                    className: popupStyle, // Add your own custom styling to your popup
+                })
+            )
+            .setPopupContent(currTenant.ic)
+            .openPopup();
+
+        arr_of_markers.push(marker);
+    }
+}
+
+// Display all details
+function displayAllDetails() {
+    // prettier-ignore
+    for (const currTenant of arr_filtered_data) {
+        let detailStyle;
+
+        if (currTenant.currStatus == 'good') {
+            detailStyle = 'detail--green';
+        } 
+        else if (currTenant.currStatus == 'warning') {
+            detailStyle = 'detail--yellow';
+        } 
+        else {
+            detailStyle = 'detail--red';
+        }
+
+        let htmlElement = `
+            <li class="detail ${detailStyle}">
+                <img src="tennant_image_placeholder.jpg" class="tennant_image" alt="something" />
+                <h2 class="detail__title">${currTenant.ic}</h2>
+            </li>
+        `;
+
+        details.insertAdjacentHTML('beforeend', htmlElement);
+    }
+}
+
+// When Geolocation successfully get user's current location
 function success(position) {
     console.log(position);
 
@@ -43,12 +153,11 @@ function success(position) {
 
     // The "map" inside the map() method, is the ID of an element, where we want to display the map.
     // L is a namespace
+    // The setView() basically displays where the map should be at, when it is loaded.
+    // In this case, it should be at user's current location
     // The setView() method expects two arguments.
     // 1st argument: an array of latitude and longitude
-    // 2nd argument: how zoomed in or zoomed out the map should be, on the coordinate provided.
-    // The higher the value, the more zoomed in
-    // setView() basically displays where the map should be at, when it is loaded.
-    // In this case, it should be at user's current location
+    // 2nd argument: how zoomed in or zoomed out the map should be, on the coordinate provided. The higher the value, the more zoomed in
     map = L.map('map').setView([latitude, longitude], 13);
 
     // The map being displayed, is made up of tiles. And the tiles comes from this url below
@@ -61,92 +170,94 @@ function success(position) {
     // L.marker([latitude, longitude]).addTo(map).bindPopup("Yoooooo.<br> Where I'm at.").openPopup();
 
     // Display all markers
-    for (const currTenant of arr_of_tennant) {
-        let popupStyle;
+    displayAllMarkers();
 
-        if (currTenant.currStatus == 'good') {
-            popupStyle = 'running-popup';
-        } else if (currTenant.currStatus == 'warning') {
-            popupStyle = 'cycling-popup';
-        } else {
-            popupStyle = 'error-popup';
-        }
-
-        L.marker([currTenant.lat, currTenant.lng])
-            .addTo(map)
-            .bindPopup(
-                L.popup({
-                    maxWidth: 250,
-                    minWidth: 100,
-                    className: popupStyle, // Add your own custom styling to your popup
-                })
-            )
-            .setPopupContent(currTenant.name)
-            .openPopup();
-    }
-
-    // on() method is comming from leaflet library, not javascript itself
-    // What happens when the user click anywhere on the map
-    map.on('click', function (mapE) {
-        mapEvent = mapE;
-
-        // Display the form by removing the hidden class
-        form.classList.remove('hidden');
-
-        // For better user experience, after opening up the form, make the browser focus on inputDistance field.
-        inputDistance.focus();
-
-        // There is no submit button for the form. The user will have to press the enter key to submit the form. So, we will listen for the enter key event listener
-    });
+    // Display all details
+    displayAllDetails();
 }
 
-// When geolocation fails to get user's current location
+// When Geolocation fails to get user's current location
 function fail() {
     alert('Could not get your position.');
 }
 
 // Check if navigator exists (older browsers don't support navigator)
+// prettier-ignore
 if (navigator.geolocation) {
-    // Get user's current location
-    // 1st callback function is when the browser successfully grabbed the user's current location
-    // 2nd callback function is when it fails
-    // 3rd argument: To get more accurate current location
+    // If navigator exists, attempt to get user's current location.
     navigator.geolocation.getCurrentPosition(success, fail);
-} else {
-    console.log('Geolocation is not supported by this browser.');
+} 
+else {
+    alert('Geolocation is not supported by this browser.');
 }
 
-// When the user press the enter key, for a form
-form.addEventListener('submit', function (e) {
-    // Prevent the form from automatically refresh the page when the form is submitted
-    e.preventDefault();
+function removeDetails() {
+    // Remove all child elements of detail element
+    // In other words, remove all <li> elements inside the <ul> elements
+    details.innerHTML = '';
+}
 
-    // Remove the form
-    form.classList.add('hidden');
+function removeMarkers() {
+    for (var i = 0; i < arr_of_markers.length; i++) {
+        map.removeLayer(arr_of_markers[i]);
+    }
+    arr_of_markers = []; // Clear the array after removing markers
+}
 
-    // Clear input fields
-    // inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
+dropdown_menu.addEventListener('change', function () {
+    const selected_item = dropdown_menu.value;
+    console.log(selected_item);
 
-    // Display the marker
-    // mapEvent is an object, which contain some useful data such as the latitude and longitude of the clicked position
-    console.log(mapEvent);
+    arr_filtered_data.length = 0;
 
-    // Destructure lat and lng properties from latlng object
-    const { lat } = mapEvent.latlng;
-    const { lng } = mapEvent.latlng;
+    // Use spread operator to make a shallow copy of an array
+    // arr_filtered_data = [...arr_of_tennant];
 
-    console.log(lat, lng);
+    // prettier-ignore
+    if (selected_item == 'default') {
+        arr_filtered_data = [...arr_of_tennant];
+    } 
 
-    // Display a marker exactly where the user clicked it
-    L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup(
-            L.popup({
-                maxWidth: 250,
-                minWidth: 100,
-                className: 'running-popup', // Add your own custom styling to your popup
-            })
-        )
-        .setPopupContent('1')
-        .openPopup();
+    else if(selected_item == "good to error"){
+
+        arr_filtered_data = [...arr_of_tennant];
+
+        // Define the order for the status
+        const statusOrder = { good: 1, warning: 2, error: 3 };
+
+        // Sort the array based on status
+        arr_filtered_data.sort((a, b) => {
+            return statusOrder[a.currStatus] - statusOrder[b.currStatus];
+        });
+    }
+
+    else if(selected_item == "error to good"){
+
+        arr_filtered_data = [...arr_of_tennant];
+
+        // Define the order for the status
+        const statusOrder = { error: 1, warning: 2, good: 3 };
+
+        // Sort the array based on status
+        arr_filtered_data.sort((a, b) => {
+            return statusOrder[a.currStatus] - statusOrder[b.currStatus];
+        });
+
+    }
+
+    else {
+        for (const curr_tenant of arr_of_tennant) {
+            if (curr_tenant.currStatus == selected_item) {
+                arr_filtered_data.push(curr_tenant);
+            }
+        }
+    }
+
+    console.log(arr_filtered_data);
+
+    removeMarkers();
+    removeDetails();
+
+    displayAllMarkers();
+    displayAllDetails();
 });
