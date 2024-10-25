@@ -48,75 +48,23 @@
         <div class="sidebar">
             <img src="logo.png" alt="Logo" class="logo" />
 
-            <ul class="workouts">
-                <form class="form hidden">
-                    <div class="form__row">
-                        <label class="form__label">IC No.</label>
-                        <input class="form__input form__input--distance" placeholder="e.g. 000123456789" />
-                    </div>
+            <ul class="details"></ul>
 
-                    <div class="form__row">
-                        <label class="form__label">Name</label>
-                        <input class="form__input form__input--duration" placeholder="Name" />
-                    </div>
+            <label class="form__label">Type</label>
+            <select id="dropdown_menu" class="form__input">
+                <option value="default">Display All</option>
+                <option value="good">Good Tennants</option>
+                <option value="warning">Warning Tenants</option>
+                <option value="error">Error Tenants</option>
+                <option value="good to error">Good > Warning > Error</option>
+                <option value="error to good">Error > Warning > Good</option>
+            </select>
 
-                    <button class="form__btn">OK</button>
-                </form>
-
-                <!-- <li class="workout workout--running" data-id="1234567890">
-          <h2 class="workout__title">Running on April 14</h2>
-          <div class="workout__details">
-            <span class="workout__icon">🏃‍♂️</span>
-            <span class="workout__value">5.2</span>
-            <span class="workout__unit">km</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">⏱</span>
-            <span class="workout__value">24</span>
-            <span class="workout__unit">min</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">⚡️</span>
-            <span class="workout__value">4.6</span>
-            <span class="workout__unit">min/km</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">🦶🏼</span>
-            <span class="workout__value">178</span>
-            <span class="workout__unit">spm</span>
-          </div>
-        </li>
-
-        <li class="workout workout--cycling" data-id="1234567891">
-          <h2 class="workout__title">Cycling on April 5</h2>
-          <div class="workout__details">
-            <span class="workout__icon">🚴‍♀️</span>
-            <span class="workout__value">27</span>
-            <span class="workout__unit">km</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">⏱</span>
-            <span class="workout__value">95</span>
-            <span class="workout__unit">min</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">⚡️</span>
-            <span class="workout__value">16</span>
-            <span class="workout__unit">km/h</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">⛰</span>
-            <span class="workout__value">223</span>
-            <span class="workout__unit">m</span>
-          </div>
-        </li> -->
-            </ul>
-
-            <p class="copyright">
+            <!-- <p class="copyright">
                 &copy; Copyright by
                 <a class="twitter-link" target="_blank" href="#"> Group 12 </a>
                 .Software Engineering
-            </p>
+            </p> -->
         </div>
 
         <div id="map"></div>
